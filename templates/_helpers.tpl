@@ -35,7 +35,7 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "Springboot.labels" -}}
-helm.sh/chart: {{ include "charts.chart" . }}
+helm.sh/chart: {{ include "Springboot.chart" . }}
 {{ include "Springboot.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
