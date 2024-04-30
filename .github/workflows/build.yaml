@@ -5,6 +5,11 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+env:
+  app: sample-springboot
+  repository: ${{ secrets.DOCKER_REPO }}/docker
+  image_name: ${{ env.repository }}/${{ env.app }}
+  image_tag: ${{ github.sha }}
 jobs:
   gradle:
     name: Gradle Build
@@ -46,11 +51,6 @@ jobs:
     needs: gradle           # step_name
     name: Docker Build
     runs-on: ubuntu-22.04
-    env:
-      app: sample-springboot
-      repository: ${{ secrets.DOCKER_REPO }}/docker
-      image_name: ${{ env.repository }}/${{ env.app }}
-      image_tag: ${{ github.sha }}
     steps:
       - name: Building Docker Image
         run: |
