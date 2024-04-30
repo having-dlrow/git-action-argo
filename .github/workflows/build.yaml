@@ -55,7 +55,7 @@ jobs:
   deployment:
     name: Argo Deployment
     runs-on: ubuntu-22.04
-    needs: build
+    needs: gradle
     environment: dev
     env:
       image_name: ${{ secrets.DOCKER_REPO }}/docker/sample-springboot
