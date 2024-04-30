@@ -7,8 +7,12 @@ on:
 
 jobs:
   gradle:
-    name: Gradle Build
+    name: Image Build
     runs-on: ubuntu-22.04
+    environment: dev    
+    env:
+      image_name: ${{ secrets.DOCKER_REPO }}/docker/sample-springboot
+      image_tag: ${{ github.sha }}    
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -41,22 +45,12 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test
 
-  build:
-    needs: gradle
-    name: Docker Build
-    runs-on: ubuntu-22.04
-    environment: dev    
-    env:
-      image_name: ${{ secrets.DOCKER_REPO }}/docker/sample-springboot
-      image_tag: ${{ github.sha }}
-    steps:
       - name: Building Docker Image
         run: |
           docker login ${{ secrets.DOCKER_REPO }} -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker build -t ${{ env.image_name }}:${{ env.image_tag }} -t ${{ env.image_name }}:latest .
           docker push ${{ env.image_name }}:${{ env.image_tag }}
           docker push ${{ env.image_name }}:latest
-
 
   deployment:
     name: Argo Deployment
