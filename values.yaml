@@ -41,7 +41,7 @@ ingress:
     cert-manager.io/cluster-issuer: "ha-ving.store-issuer"
   hosts:
     - host: springboot.ha-ving.store
-      path:
+      paths:
         - path: /
           pathType: Prefix
   tls:
