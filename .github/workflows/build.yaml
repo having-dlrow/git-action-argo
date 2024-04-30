@@ -51,7 +51,6 @@ jobs:
     steps:
       - name: Building Docker Image
         run: |
-          ls -al
           docker login ${{ secrets.DOCKER_REPO }} -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker build -t ${{ env.image_name }}:${{ env.image_tag }} -t ${{ env.image_name }}:latest .
           docker push ${{ env.image_name }}:${{ env.image_tag }}
