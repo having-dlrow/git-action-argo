@@ -18,7 +18,7 @@ serviceAccount:
   name: ""
 
 image:
-  repository: harbor.ha-ving.store/docker/argo-springboot
+  repository: harbor.ha-ving.store/docker/sample-springboot
   tag: "3a1b34dc75c68bf190e57d377dae72d97f7fb894"
   pullPolicy: IfNotPresent
 
