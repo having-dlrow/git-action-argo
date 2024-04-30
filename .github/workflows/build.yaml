@@ -5,11 +5,6 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-env:
-  app: sample-springboot
-  repository: ${{ secrets.DOCKER_REPO }}/docker
-  image_name: ${{ env.repository }}/${{ env.app }}
-  image_tag: ${{ github.sha }}
 jobs:
   gradle:
     name: Gradle Build
@@ -26,7 +21,7 @@ jobs:
         run: |
           sudo ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
           echo "Asia/Seoul" | sudo tee /etc/timezone
-        shell: bash          
+        shell: bash
 
       - name: Cache Gradle packages
         uses: actions/cache@v2
@@ -35,8 +30,7 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          restore-keys: ${{ runner.os }}-gradle-
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -48,37 +42,41 @@ jobs:
         run: ./gradlew build -x test
 
   build:
-    needs: gradle           # step_name
+    needs: gradle
     name: Docker Build
     runs-on: ubuntu-22.04
+    env:
+      image_name: ${{ secrets.DOCKER_REPO }}/docker/sample-springboot
+      image_tag: ${{ github.sha }}
     steps:
       - name: Building Docker Image
         run: |
           ls -al
           docker login ${{ secrets.DOCKER_REPO }} -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t ${{ env.image_name }}:${ emv.image_tag }} -t ${{ env.image_name }}:latest .
-
-          docker push ${{ env.image_name }}:${ emv.image_tag }}
+          docker build -t ${{ env.image_name }}:${{ env.image_tag }} -t ${{ env.image_name }}:latest .
+          docker push ${{ env.image_name }}:${{ env.image_tag }}
           docker push ${{ env.image_name }}:latest
+
 
   deployment:
     name: Argo Deployment
     runs-on: ubuntu-22.04
-    steps:      
+    needs: build
+    steps:
       - uses: actions/checkout@v4
         with:
           ref: "chart"
           submodules: 'recursive'
 
-      - name: change values.yaml
+      - name: Change values.yaml
         run: |
-          sed -i "s/tag: \"\"/tag: \"${{ env.dockerimage_tag }}\"/g" values.yaml
+          sed -i "s/tag: \"\"/tag: \"${{ env.image_tag }}\"/g" values.yaml
 
-      - name: git push
+      - name: Git Push
         run: |
           git config --global user.email "GitHub Actions Bot@github.com"
           git config --global user.name "GitHub Actions Bot"
           git add values.yaml
-          git commit -m "change image tag: ${{ env.dockerimage_tag }}"
-          git pull origin charts
+          git commit -m "change image tag: ${{ env.image_tag }}"
+          git pull --rebase origin charts
           git push origin charts
