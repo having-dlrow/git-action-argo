@@ -19,7 +19,7 @@ serviceAccount:
 
 image:
   repository: harbor.ha-ving.store/docker/sample-springboot
-  tag: "3a1b34dc75c68bf190e57d377dae72d97f7fb894"
+  tag: "39daef8e4e233bbf58c24d3f32e9c592d16ab165"
   pullPolicy: IfNotPresent
 
 podAnnotations: {}
