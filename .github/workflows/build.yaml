@@ -65,7 +65,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.branch_name }}
-          submodules: 'recursive'
+          submodules: 'recursive'             # Actions -> General -> Workflow permissions (add write)
+          token: ${{ secrets.GITHUB_TOKEN }}  # Ensure the token is being used
 
       - name: Change values.yaml
         run: |
@@ -77,5 +78,5 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git add values.yaml
           git commit -m "change image tag: ${{ env.image_tag }}"
-          git pull --rebase origin ${{ env.branch_name }}
-          git push origin ${{ env.branch_name }}
+          git -c http.extraHeader="AUTHORIZATION: bearer ${{ secrets.GITHUB_TOKEN }}" pull --rebase origin ${{ env.branch_name }}
+          git -c http.extraHeader="AUTHORIZATION: bearer ${{ secrets.GITHUB_TOKEN }}" push origin ${{ env.branch_name }}
