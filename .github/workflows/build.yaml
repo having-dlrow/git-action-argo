@@ -70,7 +70,7 @@ jobs:
 
       - name: Change values.yaml
         run: |
-          sed -i "s/tag: \"\"/tag: \"${{ env.image_tag }}\"/g" values.yaml
+          sed -i "s/tag: \".*\"/tag: \"${{ env.image_tag }}\"/g" values.yaml
 
       - name: Git Push
         run: |
