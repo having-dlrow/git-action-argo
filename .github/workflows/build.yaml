@@ -45,6 +45,7 @@ jobs:
     needs: gradle
     name: Docker Build
     runs-on: ubuntu-22.04
+    environment: dev    
     env:
       image_name: ${{ secrets.DOCKER_REPO }}/docker/sample-springboot
       image_tag: ${{ github.sha }}
@@ -61,6 +62,10 @@ jobs:
     name: Argo Deployment
     runs-on: ubuntu-22.04
     needs: build
+    environment: dev
+    env:
+      image_name: ${{ secrets.DOCKER_REPO }}/docker/sample-springboot
+      image_tag: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v4
         with:
